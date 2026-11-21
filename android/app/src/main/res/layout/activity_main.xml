@@ -13,7 +13,13 @@
         app:title="@string/app_name"
         app:titleTextColor="?attr/colorPrimary" />
 
-    <!-- Aqui são exibidas as abas (Fragments) -->
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progresso"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone" />
+
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
@@ -24,5 +30,6 @@
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:labelVisibilityMode="labeled"
         app:menu="@menu/menu_navegacao" />
 </LinearLayout>

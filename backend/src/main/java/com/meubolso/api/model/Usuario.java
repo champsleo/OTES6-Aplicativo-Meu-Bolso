@@ -9,9 +9,6 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-/**
- * Pessoa que usa o aplicativo. Cada usuário só enxerga os próprios dados.
- */
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
@@ -26,15 +23,15 @@ public class Usuario {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
-    /** A senha nunca é salva em texto puro: guardamos apenas o hash (BCrypt). */
+    // Guardamos só o hash da senha (BCrypt), nunca a senha em si.
     @Column(name = "senha_hash", nullable = false)
     private String senhaHash;
 
     @Column(name = "criado_em", nullable = false)
     private LocalDateTime criadoEm = LocalDateTime.now();
 
+    // Construtor vazio exigido pelo JPA.
     protected Usuario() {
-        // exigido pelo JPA
     }
 
     public Usuario(String nome, String email, String senhaHash) {

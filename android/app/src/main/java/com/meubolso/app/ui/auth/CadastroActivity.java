@@ -14,9 +14,6 @@ import com.meubolso.app.databinding.ActivityCadastroBinding;
 import com.meubolso.app.ui.main.MainActivity;
 import com.meubolso.app.util.Telas;
 
-/**
- * Tela de criação de conta. Após o cadastro o usuário já entra logado.
- */
 public class CadastroActivity extends AppCompatActivity {
 
     private ActivityCadastroBinding binding;

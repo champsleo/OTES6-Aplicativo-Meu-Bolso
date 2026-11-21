@@ -14,11 +14,6 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/**
- * Intercepta TODAS as requisições:
- * 1) adiciona o cabeçalho "Authorization: Bearer <token>" quando o usuário está logado;
- * 2) se o servidor responder 401 (token expirado), encerra a sessão e volta para o login.
- */
 public class AuthInterceptor implements Interceptor {
 
     private final Context context;
@@ -43,6 +38,7 @@ public class AuthInterceptor implements Interceptor {
 
         Response resposta = chain.proceed(requisicao);
 
+        // Token expirado: encerra a sessão e volta ao login. Na rota de login, 401 é só senha errada, por isso fica de fora.
         boolean rotaDeLogin = requisicao.url().encodedPath().startsWith("/api/auth");
         if (resposta.code() == 401 && token != null && !rotaDeLogin) {
             sessao.encerrar();

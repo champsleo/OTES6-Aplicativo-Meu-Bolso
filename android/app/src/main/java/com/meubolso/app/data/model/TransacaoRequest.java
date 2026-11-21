@@ -6,15 +6,16 @@ public class TransacaoRequest {
 
     private final String descricao;
     private final BigDecimal valor;
-    /** Formato AAAA-MM-DD. */
     private final String data;
     private final Long categoriaId;
+    private final Long contaId;
 
-    public TransacaoRequest(String descricao, BigDecimal valor, String data, Long categoriaId) {
+    public TransacaoRequest(String descricao, BigDecimal valor, String data, Long categoriaId, Long contaId) {
         this.descricao = descricao;
         this.valor = valor;
         this.data = data;
         this.categoriaId = categoriaId;
+        this.contaId = contaId;
     }
 
     public String getDescricao() {
@@ -31,5 +32,9 @@ public class TransacaoRequest {
 
     public Long getCategoriaId() {
         return categoriaId;
+    }
+
+    public Long getContaId() {
+        return contaId;
     }
 }

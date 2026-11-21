@@ -25,10 +25,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
-/**
- * CRUD de categorias. O controller só recebe a requisição e repassa para o service:
- * nenhuma regra de negócio fica aqui.
- */
 @RestController
 @RequestMapping("/api/categorias")
 @Tag(name = "Categorias", description = "Categorias de receitas e despesas")

@@ -24,9 +24,6 @@ import com.meubolso.app.util.Formatadores;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Aba "Resumo": gráfico de despesas por categoria, limites mensais e totais do mês.
- */
 public class ResumoFragment extends Fragment {
 
     private FragmentResumoBinding binding;
@@ -57,6 +54,11 @@ public class ResumoFragment extends Fragment {
         binding.seletorMes.btnProximoMes.setOnClickListener(v -> mainViewModel.proximoMes());
 
         viewModel.getResumo().observe(getViewLifecycleOwner(), this::exibir);
+        viewModel.getHistorico().observe(getViewLifecycleOwner(), resultado -> {
+            if (resultado.isSucesso()) {
+                binding.graficoEvolucao.setDados(resultado.getDados(), mainViewModel.mesAtual());
+            }
+        });
         mainViewModel.getMes().observe(getViewLifecycleOwner(), mes -> {
             binding.seletorMes.tvMes.setText(Formatadores.mesAno(mes));
             viewModel.carregar(mes);
@@ -94,6 +96,7 @@ public class ResumoFragment extends Fragment {
     }
 
     @Override
+    // Ao voltar de outra tela, recarrega para mostrar o que mudou.
     public void onResume() {
         super.onResume();
         if (precisaRecarregar) {

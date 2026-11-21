@@ -1,6 +1,8 @@
 package com.meubolso.api.exception;
 
 import com.meubolso.api.dto.ErroResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -10,15 +12,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 
-/**
- * Transforma exceções em respostas JSON padronizadas, com o status HTTP correto.
- * Assim os controllers ficam limpos, sem try/catch.
- */
+// Converte exceções em respostas JSON com o status HTTP certo, assim os controllers não precisam de try/catch.
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
@@ -44,7 +44,6 @@ public class ApiExceptionHandler {
         return resposta(HttpStatus.UNAUTHORIZED, ex.getMessage(), List.of());
     }
 
-    /** Erros de validação (@NotBlank, @Positive...) nos dados enviados. */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErroResponse> validacao(MethodArgumentNotValidException ex) {
         List<String> detalhes = ex.getBindingResult().getFieldErrors().stream()
@@ -53,6 +52,24 @@ public class ApiExceptionHandler {
         String mensagem = ex.getBindingResult().getFieldErrors().isEmpty()
                 ? "Dados inválidos"
                 : ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+        return resposta(HttpStatus.BAD_REQUEST, mensagem, detalhes);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErroResponse> parametroForaDoLimite(ConstraintViolationException ex) {
+        List<String> detalhes = ex.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .toList();
+        String mensagem = detalhes.isEmpty() ? "Parâmetro inválido" : detalhes.get(0);
+        return resposta(HttpStatus.BAD_REQUEST, mensagem, detalhes);
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErroResponse> validacaoDeParametros(HandlerMethodValidationException ex) {
+        List<String> detalhes = ex.getAllErrors().stream()
+                .map(erro -> erro.getDefaultMessage())
+                .toList();
+        String mensagem = detalhes.isEmpty() ? "Parâmetro inválido" : detalhes.get(0);
         return resposta(HttpStatus.BAD_REQUEST, mensagem, detalhes);
     }
 
@@ -73,6 +90,7 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErroResponse> erroInesperado(Exception ex) {
+        // Os detalhes vão só para o log; o cliente recebe uma mensagem genérica.
         log.error("Erro inesperado", ex);
         return resposta(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno no servidor", List.of());
     }

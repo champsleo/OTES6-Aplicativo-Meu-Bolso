@@ -4,10 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 
-/**
- * Ponto de entrada do back-end. Rode esta classe para subir a API em http://localhost:8080
- * (a autenticação é feita por JWT, por isso o usuário/senha padrão do Spring Security é desligado).
- */
+// O login é feito por JWT, então desligamos o usuário e senha padrão que o Spring Security cria.
 @SpringBootApplication(exclude = UserDetailsServiceAutoConfiguration.class)
 public class MeuBolsoApplication {
 

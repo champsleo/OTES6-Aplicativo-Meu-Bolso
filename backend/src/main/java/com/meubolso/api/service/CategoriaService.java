@@ -9,6 +9,7 @@ import com.meubolso.api.model.Categoria;
 import com.meubolso.api.model.TipoTransacao;
 import com.meubolso.api.model.Usuario;
 import com.meubolso.api.repository.CategoriaRepository;
+import com.meubolso.api.repository.RecorrenciaRepository;
 import com.meubolso.api.repository.TransacaoRepository;
 import com.meubolso.api.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
@@ -17,22 +18,22 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Regras de negócio das categorias.
- */
 @Service
 public class CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
     private final TransacaoRepository transacaoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final RecorrenciaRepository recorrenciaRepository;
 
     public CategoriaService(CategoriaRepository categoriaRepository,
                             TransacaoRepository transacaoRepository,
-                            UsuarioRepository usuarioRepository) {
+                            UsuarioRepository usuarioRepository,
+                            RecorrenciaRepository recorrenciaRepository) {
         this.categoriaRepository = categoriaRepository;
         this.transacaoRepository = transacaoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.recorrenciaRepository = recorrenciaRepository;
     }
 
     @Transactional(readOnly = true)
@@ -71,7 +72,9 @@ public class CategoriaService {
         if (categoriaRepository.existsByUsuarioIdAndTipoAndNomeIgnoreCaseAndIdNot(usuarioId, request.tipo(), nome, id)) {
             throw new ConflitoException("Já existe uma categoria com esse nome");
         }
-        if (categoria.getTipo() != request.tipo() && transacaoRepository.existsByCategoriaId(id)) {
+        boolean emUso = transacaoRepository.existsByCategoriaId(id) || recorrenciaRepository.existsByCategoriaId(id);
+        // Mudar o tipo deixaria os lançamentos antigos incoerentes com a categoria.
+        if (categoria.getTipo() != request.tipo() && emUso) {
             throw new RegraNegocioException(
                     "Não é possível mudar o tipo de uma categoria que já possui lançamentos");
         }
@@ -87,11 +90,15 @@ public class CategoriaService {
             throw new RegraNegocioException(
                     "Esta categoria possui lançamentos. Exclua ou altere os lançamentos antes.");
         }
+        if (recorrenciaRepository.existsByCategoriaId(id)) {
+            throw new RegraNegocioException(
+                    "Esta categoria é usada por um lançamento recorrente. Exclua a recorrência antes.");
+        }
         categoriaRepository.delete(categoria);
     }
 
-    /** Usado também pelo TransacaoService. Garante que a categoria pertence ao usuário. */
     @Transactional(readOnly = true)
+    // Buscar sempre por id + usuário garante que ninguém acesse dados de outra pessoa.
     public Categoria buscarEntidade(Long id, Long usuarioId) {
         return categoriaRepository.findByIdAndUsuarioId(id, usuarioId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Categoria não encontrada"));

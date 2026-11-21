@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.meubolso.app.R;
 import com.meubolso.app.data.model.Categoria;
@@ -21,9 +20,6 @@ import com.meubolso.app.databinding.FragmentCategoriasBinding;
 
 import java.util.List;
 
-/**
- * Aba "Categorias": lista, cria, edita e exclui categorias.
- */
 public class CategoriasFragment extends Fragment implements CategoriaAdapter.Acoes {
 
     private static final String TAG_DIALOGO = "dialogo_categoria";
@@ -61,6 +57,16 @@ public class CategoriasFragment extends Fragment implements CategoriaAdapter.Aco
             }
         });
 
+        viewModel.getExcluida().observe(getViewLifecycleOwner(), evento -> {
+            Categoria excluida = evento.consumir();
+            if (excluida != null) {
+                Snackbar.make(binding.getRoot(), getString(R.string.categoria_excluida_nome, excluida.getNome()),
+                                Snackbar.LENGTH_LONG)
+                        .setAction(R.string.desfazer, v -> viewModel.desfazerExclusao(excluida))
+                        .show();
+            }
+        });
+
         if (savedInstanceState == null) {
             viewModel.carregar();
         }
@@ -88,12 +94,7 @@ public class CategoriasFragment extends Fragment implements CategoriaAdapter.Aco
 
     @Override
     public void excluir(Categoria categoria) {
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.excluir_categoria)
-                .setMessage(getString(R.string.confirmar_exclusao_categoria, categoria.getNome()))
-                .setNegativeButton(R.string.cancelar, null)
-                .setPositiveButton(R.string.excluir, (dialog, which) -> viewModel.excluir(categoria))
-                .show();
+        viewModel.excluir(categoria);
     }
 
     @Override

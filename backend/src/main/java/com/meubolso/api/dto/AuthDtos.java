@@ -4,10 +4,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-/**
- * DTOs (Data Transfer Objects) de autenticação.
- * DTOs definem exatamente o JSON que entra e sai da API, sem expor as entidades do banco.
- */
 public final class AuthDtos {
 
     private AuthDtos() {

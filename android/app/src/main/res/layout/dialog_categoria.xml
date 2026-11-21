@@ -64,7 +64,6 @@
             android:layout_height="wrap_content"
             android:scrollbars="none">
 
-            <!-- As bolinhas de cor são criadas no código (CategoriaDialogFragment) -->
             <LinearLayout
                 android:id="@+id/paletaCores"
                 android:layout_width="wrap_content"
@@ -86,8 +85,7 @@
                 android:id="@+id/etLimite"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:digits="0123456789.,"
-                android:inputType="numberDecimal" />
+                android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 </ScrollView>

@@ -8,9 +8,6 @@ public final class ResumoDtos {
     private ResumoDtos() {
     }
 
-    /**
-     * Resumo de um mês: totais, saldo e quanto foi gasto em cada categoria.
-     */
     public record ResumoMensalResponse(
             String mes,
             BigDecimal totalReceitas,
@@ -20,10 +17,6 @@ public final class ResumoDtos {
             List<GastoPorCategoria> despesasPorCategoria) {
     }
 
-    /**
-     * @param percentualDoTotal  quanto essa categoria representa do total de despesas (0 a 100)
-     * @param percentualDoLimite quanto do limite mensal já foi usado (null se a categoria não tem limite)
-     */
     public record GastoPorCategoria(
             Long categoriaId,
             String nome,
@@ -33,5 +26,12 @@ public final class ResumoDtos {
             BigDecimal limiteMensal,
             Double percentualDoLimite,
             boolean limiteExcedido) {
+    }
+
+    public record HistoricoMensal(
+            String mes,
+            BigDecimal totalReceitas,
+            BigDecimal totalDespesas,
+            BigDecimal saldo) {
     }
 }

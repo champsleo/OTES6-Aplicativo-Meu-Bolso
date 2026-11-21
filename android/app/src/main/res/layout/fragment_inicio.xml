@@ -13,7 +13,6 @@
             android:id="@+id/seletorMes"
             layout="@layout/view_seletor_mes" />
 
-        <!-- Cartão verde com o saldo do mês -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -98,7 +97,26 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Filtro: todos / receitas / despesas -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/campoBusca"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margem_tela"
+            android:layout_marginTop="12dp"
+            android:hint="@string/buscar_lancamento"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/ic_busca">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etBusca"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipsFiltro"
             android:layout_width="match_parent"
@@ -137,7 +155,6 @@
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <!-- Puxe a lista para baixo para atualizar -->
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swipeRefresh"
                 android:layout_width="match_parent"

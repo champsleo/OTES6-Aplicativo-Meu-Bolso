@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-/** Serializable para poder ser enviada entre telas dentro de um Bundle. */
 public class Categoria implements Serializable {
 
     private Long id;
@@ -50,8 +49,12 @@ public class Categoria implements Serializable {
         return Objects.hash(id, nome, tipo, cor, limiteMensal);
     }
 
-    /** Usado pelo dropdown de categorias: exibe o nome. */
+    public CategoriaRequest paraRequest() {
+        return new CategoriaRequest(nome, tipo, cor, limiteMensal);
+    }
+
     @Override
+    // O dropdown usa o toString para exibir o nome.
     public String toString() {
         return nome;
     }

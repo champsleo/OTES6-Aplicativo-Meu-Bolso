@@ -19,9 +19,10 @@ public class TransacaoRepository {
         this.api = ApiClient.getService(context);
     }
 
-    /** @param tipo filtro opcional (null = receitas e despesas) */
-    public void listar(YearMonth mes, TipoTransacao tipo, ResultadoCallback<List<Transacao>> callback) {
-        api.listarTransacoes(mes.toString(), tipo).enqueue(new ApiCallback<>(callback));
+    public void listar(YearMonth mes, TipoTransacao tipo, String busca,
+                       ResultadoCallback<List<Transacao>> callback) {
+        String termo = (busca == null || busca.trim().isEmpty()) ? null : busca.trim();
+        api.listarTransacoes(mes.toString(), tipo, null, termo).enqueue(new ApiCallback<>(callback));
     }
 
     public void buscar(long id, ResultadoCallback<Transacao> callback) {

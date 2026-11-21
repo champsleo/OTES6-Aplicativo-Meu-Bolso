@@ -7,10 +7,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Configura a documentação interativa em http://localhost:8080/swagger-ui.html
- * O botão "Authorize" aceita o token retornado pelo login.
- */
 @Configuration
 @OpenAPIDefinition(
         info = @Info(

@@ -16,23 +16,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
 
-/**
- * Regras de cadastro e login.
- */
 @Service
 public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
     private final CategoriaService categoriaService;
+    private final ContaService contaService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     public AuthService(UsuarioRepository usuarioRepository,
                        CategoriaService categoriaService,
+                       ContaService contaService,
                        PasswordEncoder passwordEncoder,
                        JwtService jwtService) {
         this.usuarioRepository = usuarioRepository;
         this.categoriaService = categoriaService;
+        this.contaService = contaService;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
     }
@@ -49,8 +49,8 @@ public class AuthService {
                 email,
                 passwordEncoder.encode(request.senha())));
 
-        // Todo usuário novo já começa com categorias prontas para usar
         categoriaService.criarCategoriasPadrao(usuario);
+        contaService.criarContasPadrao(usuario);
 
         return gerarResposta(usuario);
     }
@@ -58,6 +58,7 @@ public class AuthService {
     @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
         Usuario usuario = usuarioRepository.findByEmailIgnoreCase(normalizarEmail(request.email()))
+                // Mesma mensagem para e-mail inexistente e senha errada, para não revelar quem tem conta.
                 .orElseThrow(CredenciaisInvalidasException::new);
 
         if (!passwordEncoder.matches(request.senha(), usuario.getSenhaHash())) {
@@ -81,6 +82,7 @@ public class AuthService {
         return new UsuarioResponse(usuario.getId(), usuario.getNome(), usuario.getEmail());
     }
 
+    // Minúsculas para "Ana@x.com" e "ana@x.com" não virarem duas contas.
     private String normalizarEmail(String email) {
         return email.trim().toLowerCase(Locale.ROOT);
     }

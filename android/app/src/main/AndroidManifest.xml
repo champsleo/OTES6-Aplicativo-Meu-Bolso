@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Necessário para acessar a API pela rede -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Para os avisos de limite de gastos. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!--
-        usesCleartextTraffic="true" permite HTTP sem "S" (o servidor local não tem certificado HTTPS).
-        Em um app publicado de verdade, a API deveria usar HTTPS.
-    -->
+    <!-- usesCleartextTraffic e networkSecurityConfig liberam HTTP para o servidor local. Com uma API publicada, use HTTPS. -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -21,6 +19,7 @@
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="true"
+            android:theme="@style/Theme.MeuBolso.Splash"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,6 +40,19 @@
             android:name=".ui.transacao.TransacaoFormActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-    </application>
+        <activity
+            android:name=".ui.recorrencias.RecorrenciasActivity"
+            android:exported="false" />
 
+        <!-- Permite compartilhar os arquivos exportados (CSV e PDF) com outros apps. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.arquivos"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/caminhos_arquivos" />
+        </provider>
+    </application>
 </manifest>

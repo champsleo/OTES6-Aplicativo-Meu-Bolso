@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Substituem as cores de values/colors.xml quando o modo escuro está ligado. -->
+    <color name="verde_claro">#4A1C1C</color>
+    <color name="verde_escuro">#F2DEDA</color>
+    <color name="fundo">#17110F</color>
+    <color name="superficie">#221A17</color>
+    <color name="texto_principal">#F1E8E4</color>
+    <color name="texto_secundario">#B5B78A</color>
+    <color name="receita">#66BB6A</color>
+    <color name="despesa">#EF5350</color>
+    <color name="alerta">#FFA726</color>
+    <color name="anel_vazio">#3A2F2B</color>
+</resources>

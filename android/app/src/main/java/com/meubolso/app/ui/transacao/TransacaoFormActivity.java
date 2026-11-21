@@ -1,23 +1,27 @@
 package com.meubolso.app.ui.transacao;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.meubolso.app.R;
 import com.meubolso.app.data.model.Categoria;
+import com.meubolso.app.data.model.Conta;
 import com.meubolso.app.data.model.TipoTransacao;
 import com.meubolso.app.data.model.Transacao;
 import com.meubolso.app.data.repository.Resultado;
 import com.meubolso.app.databinding.ActivityTransacaoFormBinding;
 import com.meubolso.app.util.Formatadores;
+import com.meubolso.app.util.MascaraMoeda;
+import com.meubolso.app.util.Notificacoes;
 import com.meubolso.app.util.Telas;
 
 import java.time.LocalDate;
@@ -25,19 +29,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Formulário de lançamento. Sem EXTRA_ID cria um novo; com EXTRA_ID edita (e permite excluir).
- */
 public class TransacaoFormActivity extends AppCompatActivity {
 
     public static final String EXTRA_ID = "transacao_id";
+    private static final String EXTRA_EXCLUIDA = "transacao_excluida";
 
     private ActivityTransacaoFormBinding binding;
     private TransacaoFormViewModel viewModel;
     private Long transacaoId;
     private final List<Categoria> todasCategorias = new ArrayList<>();
-    /** Categoria do lançamento em edição que ainda espera a lista de categorias chegar. */
+    private final List<Conta> todasContas = new ArrayList<>();
+    // Ao editar, o lançamento pode chegar antes das listas; guardamos o id até elas chegarem.
     private Long categoriaPendenteId;
+    private Long contaPendenteId;
+
+    @SuppressWarnings("deprecation")
+    @Nullable
+    public static Transacao lerExcluida(Intent dados) {
+        Object excluida = dados.getSerializableExtra(EXTRA_EXCLUIDA);
+        return (excluida instanceof Transacao) ? (Transacao) excluida : null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +65,7 @@ public class TransacaoFormActivity extends AppCompatActivity {
         configurarCampos();
 
         viewModel.getCategorias().observe(this, this::exibirCategorias);
+        viewModel.getContas().observe(this, this::exibirContas);
         viewModel.getTransacao().observe(this, this::exibirTransacao);
         viewModel.getOperacao().observe(this, this::exibirOperacao);
 
@@ -68,7 +80,7 @@ public class TransacaoFormActivity extends AppCompatActivity {
             binding.toolbar.inflateMenu(R.menu.menu_transacao_form);
             binding.toolbar.setOnMenuItemClickListener(item -> {
                 if (item.getItemId() == R.id.acaoExcluir) {
-                    confirmarExclusao();
+                    viewModel.excluir(transacaoId);
                     return true;
                 }
                 return false;
@@ -77,12 +89,16 @@ public class TransacaoFormActivity extends AppCompatActivity {
     }
 
     private void configurarCampos() {
+        MascaraMoeda.aplicar(binding.etValor);
         atualizarCampoData();
         binding.etData.setOnClickListener(v -> abrirCalendario());
 
+        // "Repetir todo mês" só ao criar; editar muda apenas este lançamento.
+        binding.switchRepetir.setVisibility(transacaoId == null ? View.VISIBLE : View.GONE);
+
         binding.grupoTipo.addOnButtonCheckedListener((grupo, botaoId, marcado) -> {
             if (marcado) {
-                // Trocou de Despesa para Receita (ou o contrário): a categoria escolhida deixa de valer
+                // Trocou entre receita e despesa: a categoria escolhida deixa de valer.
                 Categoria selecionada = viewModel.getCategoriaSelecionada();
                 if (selecionada != null && selecionada.getTipo() != tipoSelecionado()) {
                     viewModel.setCategoriaSelecionada(null);
@@ -93,19 +109,20 @@ public class TransacaoFormActivity extends AppCompatActivity {
 
         binding.dropCategoria.setOnItemClickListener((lista, view, posicao, id) ->
                 viewModel.setCategoriaSelecionada((Categoria) lista.getItemAtPosition(posicao)));
+        binding.dropConta.setOnItemClickListener((lista, view, posicao, id) ->
+                viewModel.setContaSelecionada((Conta) lista.getItemAtPosition(posicao)));
 
         binding.btnSalvar.setOnClickListener(v -> viewModel.salvar(
                 transacaoId,
                 Telas.texto(binding.etDescricao),
-                Formatadores.converterValor(Telas.texto(binding.etValor))));
+                MascaraMoeda.valor(binding.etValor.getText()),
+                binding.switchRepetir.isChecked()));
     }
 
     private TipoTransacao tipoSelecionado() {
         return binding.grupoTipo.getCheckedButtonId() == R.id.btnReceita
                 ? TipoTransacao.RECEITA : TipoTransacao.DESPESA;
     }
-
-    // ---------- Categorias ----------
 
     private void exibirCategorias(Resultado<List<Categoria>> resultado) {
         if (resultado.isErro()) {
@@ -124,7 +141,6 @@ public class TransacaoFormActivity extends AppCompatActivity {
         }
     }
 
-    /** Mostra no dropdown apenas as categorias do tipo escolhido (receita ou despesa). */
     private void atualizarListaDeCategorias() {
         TipoTransacao tipo = tipoSelecionado();
         List<Categoria> filtradas = new ArrayList<>();
@@ -143,7 +159,7 @@ public class TransacaoFormActivity extends AppCompatActivity {
 
     private void selecionarCategoria(Long categoriaId) {
         if (todasCategorias.isEmpty()) {
-            categoriaPendenteId = categoriaId; // a lista ainda não chegou da API
+            categoriaPendenteId = categoriaId;
             return;
         }
         categoriaPendenteId = null;
@@ -156,7 +172,39 @@ public class TransacaoFormActivity extends AppCompatActivity {
         }
     }
 
-    // ---------- Modo edição ----------
+    private void exibirContas(Resultado<List<Conta>> resultado) {
+        if (!resultado.isSucesso() || resultado.getDados() == null) {
+            return;
+        }
+        todasContas.clear();
+        todasContas.addAll(resultado.getDados());
+        binding.dropConta.setAdapter(
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, todasContas));
+
+        if (contaPendenteId != null) {
+            selecionarConta(contaPendenteId);
+        } else if (viewModel.getContaSelecionada() != null) {
+            binding.dropConta.setText(viewModel.getContaSelecionada().getNome(), false);
+        } else if (transacaoId == null && !todasContas.isEmpty()) {
+            viewModel.setContaSelecionada(todasContas.get(0));
+            binding.dropConta.setText(todasContas.get(0).getNome(), false);
+        }
+    }
+
+    private void selecionarConta(Long contaId) {
+        if (todasContas.isEmpty()) {
+            contaPendenteId = contaId;
+            return;
+        }
+        contaPendenteId = null;
+        for (Conta conta : todasContas) {
+            if (Objects.equals(conta.getId(), contaId)) {
+                viewModel.setContaSelecionada(conta);
+                binding.dropConta.setText(conta.getNome(), false);
+                return;
+            }
+        }
+    }
 
     private void exibirTransacao(Resultado<Transacao> resultado) {
         binding.progresso.setVisibility(resultado.isCarregando() ? View.VISIBLE : View.GONE);
@@ -173,19 +221,19 @@ public class TransacaoFormActivity extends AppCompatActivity {
         Transacao transacao = resultado.getDados();
         binding.grupoTipo.check(transacao.getTipo() == TipoTransacao.RECEITA ? R.id.btnReceita : R.id.btnDespesa);
         binding.etDescricao.setText(transacao.getDescricao());
-        binding.etValor.setText(transacao.getValor().toPlainString());
+        MascaraMoeda.definirValor(binding.etValor, transacao.getValor());
         viewModel.setDataSelecionada(LocalDate.parse(transacao.getData()));
         atualizarCampoData();
         selecionarCategoria(transacao.getCategoriaId());
+        selecionarConta(transacao.getContaId());
         viewModel.marcarFormularioPreenchido();
     }
-
-    // ---------- Data ----------
 
     private void abrirCalendario() {
         LocalDate atual = viewModel.getDataSelecionada();
         new DatePickerDialog(this, (picker, ano, mes, dia) -> {
-            viewModel.setDataSelecionada(LocalDate.of(ano, mes + 1, dia)); // no DatePicker o mês começa em 0
+            // No DatePicker o mês começa em 0.
+            viewModel.setDataSelecionada(LocalDate.of(ano, mes + 1, dia));
             atualizarCampoData();
         }, atual.getYear(), atual.getMonthValue() - 1, atual.getDayOfMonth()).show();
     }
@@ -194,29 +242,37 @@ public class TransacaoFormActivity extends AppCompatActivity {
         binding.etData.setText(Formatadores.data(viewModel.getDataSelecionada()));
     }
 
-    // ---------- Salvar / excluir ----------
-
-    private void exibirOperacao(Resultado<Boolean> resultado) {
+    private void exibirOperacao(Resultado<TransacaoFormViewModel.Concluido> resultado) {
         boolean carregando = resultado.isCarregando();
         binding.progresso.setVisibility(carregando ? View.VISIBLE : View.GONE);
         binding.btnSalvar.setEnabled(!carregando);
 
-        if (resultado.isSucesso()) {
-            boolean salvou = Boolean.TRUE.equals(resultado.getDados());
-            Toast.makeText(this, salvou ? R.string.lancamento_salvo : R.string.lancamento_excluido,
-                    Toast.LENGTH_SHORT).show();
-            finish();
-        } else if (resultado.isErro()) {
+        if (resultado.isErro()) {
             Snackbar.make(binding.getRoot(), resultado.getMensagem(), Snackbar.LENGTH_LONG).show();
+            return;
         }
-    }
+        if (!resultado.isSucesso() || resultado.getDados() == null) {
+            return;
+        }
 
-    private void confirmarExclusao() {
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.excluir_lancamento)
-                .setMessage(R.string.confirmar_exclusao_lancamento)
-                .setNegativeButton(R.string.cancelar, null)
-                .setPositiveButton(R.string.excluir, (dialog, which) -> viewModel.excluir(transacaoId))
-                .show();
+        TransacaoFormViewModel.Concluido concluido = resultado.getDados();
+        switch (concluido.acao) {
+            case EXCLUIDO:
+                Intent dados = new Intent();
+                dados.putExtra(EXTRA_EXCLUIDA, concluido.transacao);
+                setResult(RESULT_OK, dados);
+                break;
+            case RECORRENCIA_CRIADA:
+                Toast.makeText(this, R.string.recorrencia_criada, Toast.LENGTH_LONG).show();
+                break;
+            default:
+                Toast.makeText(this, R.string.lancamento_salvo, Toast.LENGTH_SHORT).show();
+                if (concluido.transacao != null) {
+                    // O servidor avisa quando a categoria chega a 80% do limite.
+                    Notificacoes.alertaDeLimite(this, concluido.transacao.getAlertaLimite());
+                }
+                break;
+        }
+        finish();
     }
 }

@@ -18,7 +18,6 @@ public class CategoriaRepository {
         this.api = ApiClient.getService(context);
     }
 
-    /** @param tipo filtro opcional (null = todas) */
     public void listar(TipoTransacao tipo, ResultadoCallback<List<Categoria>> callback) {
         api.listarCategorias(tipo).enqueue(new ApiCallback<>(callback));
     }

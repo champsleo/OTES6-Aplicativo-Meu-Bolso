@@ -7,6 +7,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -18,9 +19,6 @@ import com.meubolso.app.ui.main.MainActivity;
 import com.meubolso.app.util.SessionManager;
 import com.meubolso.app.util.Telas;
 
-/**
- * Primeira tela do app. Se o usuário já estiver logado, vai direto para a tela principal.
- */
 public class LoginActivity extends AppCompatActivity {
 
     public static final String EXTRA_SESSAO_EXPIRADA = "sessao_expirada";
@@ -33,6 +31,8 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Precisa vir antes do super.onCreate.
+        SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
 
         if (new SessionManager(this).estaLogado()) {

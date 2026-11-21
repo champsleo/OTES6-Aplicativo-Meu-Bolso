@@ -1,6 +1,5 @@
 <resources>
-    <!-- Tema do aplicativo (Material Design 3, sempre claro) -->
-    <style name="Base.Theme.MeuBolso" parent="Theme.Material3.Light.NoActionBar">
+    <style name="Base.Theme.MeuBolso" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/verde</item>
         <item name="colorOnPrimary">@color/branco</item>
         <item name="colorPrimaryContainer">@color/verde_claro</item>
@@ -9,9 +8,66 @@
         <item name="colorSecondaryContainer">@color/verde_claro</item>
         <item name="colorOnSecondaryContainer">@color/verde_escuro</item>
         <item name="android:colorBackground">@color/fundo</item>
-        <item name="colorSurface">@color/branco</item>
+        <item name="colorSurface">@color/superficie</item>
         <item name="colorOnSurface">@color/texto_principal</item>
+        <item name="colorTertiary">@color/oliva</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="fontFamily">@font/montserrat</item>
+        <!-- Os estilos de texto do Material 3 têm fonte própria, por isso também recebem a Montserrat. -->
+        <item name="textAppearanceHeadlineMedium">@style/Texto.Titulo.Grande</item>
+        <item name="textAppearanceTitleLarge">@style/Texto.Titulo.Barra</item>
+        <item name="textAppearanceTitleMedium">@style/Texto.Titulo.Medio</item>
+        <item name="textAppearanceBodyLarge">@style/Texto.Corpo.Grande</item>
+        <item name="textAppearanceBodyMedium">@style/Texto.Corpo.Medio</item>
+        <item name="textAppearanceBodySmall">@style/Texto.Corpo.Pequeno</item>
+        <item name="textAppearanceLabelLarge">@style/Texto.Rotulo.Grande</item>
+        <item name="textAppearanceLabelMedium">@style/Texto.Rotulo.Medio</item>
+        <item name="textAppearanceLabelSmall">@style/Texto.Rotulo.Pequeno</item>
     </style>
 
     <style name="Theme.MeuBolso" parent="Base.Theme.MeuBolso" />
+
+    <!-- Tela de abertura; depois troca sozinha para o tema normal. -->
+    <style name="Theme.MeuBolso.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/verde</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.MeuBolso</item>
+    </style>
+
+    <style name="Texto.Titulo.Grande" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+    <style name="Texto.Titulo.Barra" parent="TextAppearance.Material3.TitleLarge">
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+    <style name="Texto.Titulo.Medio" parent="TextAppearance.Material3.TitleMedium">
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+    <style name="Texto.Corpo.Grande" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+    <style name="Texto.Corpo.Medio" parent="TextAppearance.Material3.BodyMedium">
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+    <style name="Texto.Corpo.Pequeno" parent="TextAppearance.Material3.BodySmall">
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+    <style name="Texto.Rotulo.Grande" parent="TextAppearance.Material3.LabelLarge">
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+    <style name="Texto.Rotulo.Medio" parent="TextAppearance.Material3.LabelMedium">
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+    <style name="Texto.Rotulo.Pequeno" parent="TextAppearance.Material3.LabelSmall">
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
 </resources>

@@ -19,12 +19,9 @@ import com.meubolso.app.util.Formatadores;
 
 import java.util.Objects;
 
-/**
- * Lista "gasto por categoria", com barra de progresso quando a categoria tem limite mensal.
- */
 public class GastoCategoriaAdapter extends ListAdapter<GastoCategoria, GastoCategoriaAdapter.ViewHolder> {
 
-    /** A partir de 80% do limite a barra fica laranja, como um aviso. */
+    // A partir de 80% do limite a barra fica laranja, como aviso.
     private static final double ALERTA_LIMITE = 80.0;
 
     private static final DiffUtil.ItemCallback<GastoCategoria> COMPARADOR =

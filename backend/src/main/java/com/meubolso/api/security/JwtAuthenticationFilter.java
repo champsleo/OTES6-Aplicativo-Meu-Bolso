@@ -13,10 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Executado em toda requisição: lê o cabeçalho "Authorization: Bearer <token>"
- * e, se o token for válido, marca o usuário como autenticado.
- */
+// Se o token for inválido, o filtro só não autentica; quem responde 401 é a SecurityConfig.
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String PREFIXO = "Bearer ";

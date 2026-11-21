@@ -8,9 +8,6 @@ import com.meubolso.app.data.model.LoginRequest;
 import com.meubolso.app.data.remote.ApiClient;
 import com.meubolso.app.data.remote.ApiService;
 
-/**
- * Repositório: única porta de entrada para os dados. As telas não sabem que existe Retrofit.
- */
 public class AuthRepository {
 
     private final ApiService api;

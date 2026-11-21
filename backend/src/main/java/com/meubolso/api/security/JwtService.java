@@ -15,10 +15,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
 
-/**
- * Gera e valida tokens JWT.
- * O token é como um "crachá" assinado: o app envia em toda requisição e o servidor confere a assinatura.
- */
 @Service
 public class JwtService {
 
@@ -42,9 +38,6 @@ public class JwtService {
                 .compact();
     }
 
-    /**
-     * @return o usuário do token, ou vazio se o token for inválido ou estiver expirado
-     */
     public Optional<UsuarioAutenticado> validarToken(String token) {
         try {
             Claims claims = Jwts.parser()

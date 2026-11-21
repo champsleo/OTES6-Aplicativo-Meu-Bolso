@@ -14,10 +14,6 @@ import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 
-/**
- * Agrupa lançamentos (ex.: Alimentação, Transporte, Salário).
- * Categorias de despesa podem ter um limite mensal de gastos.
- */
 @Entity
 @Table(name = "categorias")
 public class Categoria {
@@ -33,11 +29,9 @@ public class Categoria {
     @Column(nullable = false, length = 10)
     private TipoTransacao tipo;
 
-    /** Cor em hexadecimal, usada no gráfico do app (ex.: #4CAF50). */
     @Column(nullable = false, length = 7)
     private String cor;
 
-    /** Limite de gastos por mês. Opcional e só faz sentido para despesas. */
     @Column(name = "limite_mensal", precision = 12, scale = 2)
     private BigDecimal limiteMensal;
 
@@ -45,8 +39,8 @@ public class Categoria {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
+    // Construtor vazio exigido pelo JPA.
     protected Categoria() {
-        // exigido pelo JPA
     }
 
     public Categoria(String nome, TipoTransacao tipo, String cor, BigDecimal limiteMensal, Usuario usuario) {

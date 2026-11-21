@@ -43,6 +43,9 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.material)
 
+    // Tela de abertura (splash)
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     // Comunicação com a API REST
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")

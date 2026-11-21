@@ -10,10 +10,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Converte a resposta do Retrofit em um {@link Resultado}, lendo a mensagem de erro enviada pelo servidor.
- * Assim nenhuma tela precisa lidar com códigos HTTP diretamente.
- */
+// Traduz a resposta do Retrofit para Resultado e extrai a mensagem de erro que o servidor enviou.
 public class ApiCallback<T> implements Callback<T> {
 
     private static final String SEM_CONEXAO =
@@ -50,7 +47,6 @@ public class ApiCallback<T> implements Callback<T> {
                 }
             }
         } catch (Exception ignorado) {
-            // corpo do erro não estava no formato esperado
         }
         return "Erro inesperado (código " + response.code() + ")";
     }

@@ -1,6 +1,7 @@
 package com.meubolso.api.service;
 
 import com.meubolso.api.dto.ResumoDtos.GastoPorCategoria;
+import com.meubolso.api.dto.ResumoDtos.HistoricoMensal;
 import com.meubolso.api.dto.ResumoDtos.ResumoMensalResponse;
 import com.meubolso.api.model.Categoria;
 import com.meubolso.api.model.TipoTransacao;
@@ -12,15 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Calcula o resumo financeiro de um mês. Toda a matemática fica no servidor,
- * assim o app só precisa exibir os números.
- */
 @Service
 public class ResumoService {
 
@@ -49,6 +47,30 @@ public class ResumoService {
                 agruparDespesasPorCategoria(transacoes, totalDespesas));
     }
 
+    @Transactional(readOnly = true)
+    // Uma consulta só para o período inteiro; o agrupamento por mês é feito em memória.
+    public List<HistoricoMensal> historico(Long usuarioId, YearMonth ate, int meses) {
+        YearMonth inicio = ate.minusMonths(meses - 1L);
+        List<Transacao> transacoes = transacaoRepository.findByUsuarioIdAndDataBetweenOrderByDataDescIdDesc(
+                usuarioId, inicio.atDay(1), ate.atEndOfMonth());
+
+        Map<YearMonth, List<Transacao>> porMes = new LinkedHashMap<>();
+        for (YearMonth mes = inicio; !mes.isAfter(ate); mes = mes.plusMonths(1)) {
+            porMes.put(mes, new ArrayList<>());
+        }
+        for (Transacao t : transacoes) {
+            porMes.get(YearMonth.from(t.getData())).add(t);
+        }
+
+        List<HistoricoMensal> resultado = new ArrayList<>();
+        porMes.forEach((mes, lista) -> {
+            BigDecimal receitas = somar(lista, TipoTransacao.RECEITA);
+            BigDecimal despesas = somar(lista, TipoTransacao.DESPESA);
+            resultado.add(new HistoricoMensal(mes.toString(), receitas, despesas, receitas.subtract(despesas)));
+        });
+        return resultado;
+    }
+
     private BigDecimal somar(List<Transacao> transacoes, TipoTransacao tipo) {
         return transacoes.stream()
                 .filter(t -> t.getTipo() == tipo)
@@ -57,7 +79,6 @@ public class ResumoService {
     }
 
     private List<GastoPorCategoria> agruparDespesasPorCategoria(List<Transacao> transacoes, BigDecimal totalDespesas) {
-        // Soma o valor gasto em cada categoria (LinkedHashMap mantém a ordem de inserção)
         Map<Long, BigDecimal> totalPorCategoria = new LinkedHashMap<>();
         Map<Long, Categoria> categorias = new LinkedHashMap<>();
 
@@ -92,7 +113,6 @@ public class ResumoService {
                 excedido);
     }
 
-    /** Calcula (parte / todo) * 100 com 1 casa decimal. */
     private double percentual(BigDecimal parte, BigDecimal todo) {
         if (todo.signum() == 0) {
             return 0;

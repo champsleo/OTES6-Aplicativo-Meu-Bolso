@@ -17,11 +17,6 @@ import com.meubolso.app.data.repository.AuthRepository;
 import com.meubolso.app.data.repository.Resultado;
 import com.meubolso.app.util.SessionManager;
 
-/**
- * ViewModel das telas de login e cadastro.
- * Faz a validação dos campos e conversa com o repositório; a Activity só exibe o resultado.
- * Ele sobrevive à rotação de tela, então a requisição não é perdida se o usuário girar o celular.
- */
 public class AuthViewModel extends AndroidViewModel {
 
     private final AuthRepository repository;

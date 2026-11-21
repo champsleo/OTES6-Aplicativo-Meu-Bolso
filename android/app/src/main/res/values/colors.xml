@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="verde">#2E7D32</color>
-    <color name="verde_escuro">#1B5E20</color>
-    <color name="verde_claro">#C8E6C9</color>
-    <color name="fundo">#F4F6F4</color>
+    <!-- Os nomes "verde" foram mantidos para não mexer nos layouts; o valor é a cor principal do app. -->
+    <color name="verde">#7F2525</color>
+    <color name="verde_escuro">#3D1B11</color>
+    <color name="verde_claro">#F2DEDA</color>
+    <color name="oliva">#868859</color>
+
+    <color name="fundo">#FAF7F2</color>
     <color name="branco">#FFFFFF</color>
     <color name="preto">#000000</color>
-    <color name="texto_principal">#1F2A24</color>
-    <color name="texto_secundario">#66736B</color>
+    <color name="texto_principal">#3D1B11</color>
+    <color name="texto_secundario">#868859</color>
+
     <color name="receita">#2E7D32</color>
     <color name="despesa">#C62828</color>
     <color name="alerta">#EF6C00</color>
+
     <color name="branco_translucido">#CCFFFFFF</color>
+    <color name="anel_vazio">#E6DDD3</color>
+    <color name="superficie">#FFFFFF</color>
 </resources>

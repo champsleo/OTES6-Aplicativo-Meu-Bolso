@@ -11,12 +11,9 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Cria (uma única vez) o cliente HTTP usado pelo app inteiro — padrão Singleton.
- * O endereço do servidor fica em res/values/config.xml.
- */
 public final class ApiClient {
 
+    // Uma única instância para o app todo: criar o Retrofit é caro.
     private static volatile ApiService instancia;
 
     private ApiClient() {
@@ -34,7 +31,7 @@ public final class ApiClient {
     }
 
     private static ApiService criar(Context context) {
-        // Mostra as requisições e respostas no Logcat (útil para depurar e para a apresentação)
+        // Mostra as requisições no Logcat, ótimo para depurar. Num app publicado, deve ficar desligado (expõe senha e token).
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 

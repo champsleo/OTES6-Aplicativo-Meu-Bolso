@@ -1,9 +1,5 @@
 package com.meubolso.app.data.repository;
 
-/**
- * Envelope que representa o estado de uma chamada à API:
- * CARREGANDO (mostrar progresso), SUCESSO (com dados) ou ERRO (com mensagem).
- */
 public class Resultado<T> {
 
     public enum Status { CARREGANDO, SUCESSO, ERRO }

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Uma linha da lista de lançamentos -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -38,6 +37,15 @@
             android:textColor="@color/texto_secundario"
             android:textSize="13sp" />
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivRecorrente"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="8dp"
+        android:contentDescription="@string/lancamento_recorrente"
+        android:src="@drawable/ic_repetir"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tvValor"

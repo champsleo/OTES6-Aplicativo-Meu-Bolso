@@ -2,7 +2,6 @@ package com.meubolso.app.data.model;
 
 import java.util.List;
 
-/** Formato de erro padronizado que o back-end devolve (ver ErroResponse no servidor). */
 public class ErroApi {
 
     private int status;

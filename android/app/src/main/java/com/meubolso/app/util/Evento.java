@@ -1,9 +1,6 @@
 package com.meubolso.app.util;
 
-/**
- * Embrulha algo que deve acontecer UMA vez só (ex.: mostrar uma mensagem).
- * Sem isso, ao girar a tela o LiveData entregaria a mesma mensagem de novo.
- */
+// Algo que deve ser tratado uma vez só. Sem isso, girar a tela mostraria a mesma mensagem de novo.
 public class Evento<T> {
 
     private final T conteudo;
@@ -13,7 +10,6 @@ public class Evento<T> {
         this.conteudo = conteudo;
     }
 
-    /** Retorna o conteúdo na primeira chamada e null nas seguintes. */
     public T consumir() {
         if (tratado) {
             return null;

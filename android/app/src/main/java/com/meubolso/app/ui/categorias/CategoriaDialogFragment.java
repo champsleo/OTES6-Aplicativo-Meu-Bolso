@@ -20,13 +20,11 @@ import com.meubolso.app.data.model.CategoriaRequest;
 import com.meubolso.app.data.model.TipoTransacao;
 import com.meubolso.app.databinding.DialogCategoriaBinding;
 import com.meubolso.app.util.Formatadores;
+import com.meubolso.app.util.MascaraMoeda;
 import com.meubolso.app.util.Telas;
 
 import java.math.BigDecimal;
 
-/**
- * Diálogo para criar ou editar uma categoria (nome, tipo, cor e limite mensal).
- */
 public class CategoriaDialogFragment extends DialogFragment {
 
     private static final String ARG_CATEGORIA = "categoria";
@@ -49,13 +47,14 @@ public class CategoriaDialogFragment extends DialogFragment {
         return dialogo;
     }
 
-    @SuppressWarnings("deprecation") // getSerializable(String) funciona em todas as versões
+    @SuppressWarnings("deprecation")
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         categoria = (Categoria) requireArguments().getSerializable(ARG_CATEGORIA);
-        // Importante: em DialogFragment use LayoutInflater.from(...) e não getLayoutInflater()
+        // Em DialogFragment, usar getLayoutInflater() aqui causaria um loop.
         binding = DialogCategoriaBinding.inflate(LayoutInflater.from(requireContext()));
+        MascaraMoeda.aplicar(binding.etLimite);
 
         if (categoria != null) {
             preencher(categoria);
@@ -76,9 +75,10 @@ public class CategoriaDialogFragment extends DialogFragment {
                 .setTitle(categoria == null ? R.string.nova_categoria : R.string.editar_categoria)
                 .setView(binding.getRoot())
                 .setNegativeButton(R.string.cancelar, null)
-                .setPositiveButton(R.string.salvar, null) // definido abaixo para não fechar se houver erro
+                .setPositiveButton(R.string.salvar, null)
                 .create();
 
+        // O clique é tratado aqui para o diálogo não fechar quando há erro no formulário.
         dialogo.setOnShowListener(d ->
                 dialogo.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> salvar()));
         return dialogo;
@@ -92,7 +92,7 @@ public class CategoriaDialogFragment extends DialogFragment {
             corSelecionada = existente.getCor();
         }
         if (existente.getLimiteMensal() != null) {
-            binding.etLimite.setText(existente.getLimiteMensal().toPlainString());
+            MascaraMoeda.definirValor(binding.etLimite, existente.getLimiteMensal());
         }
     }
 
@@ -101,7 +101,6 @@ public class CategoriaDialogFragment extends DialogFragment {
                 ? TipoTransacao.RECEITA : TipoTransacao.DESPESA;
     }
 
-    /** Limite mensal só existe para despesas. */
     private void atualizarCampoLimite() {
         boolean despesa = tipoSelecionado() == TipoTransacao.DESPESA;
         binding.campoLimite.setVisibility(despesa ? View.VISIBLE : View.GONE);
@@ -154,7 +153,7 @@ public class CategoriaDialogFragment extends DialogFragment {
         BigDecimal limite = null;
         String textoLimite = Telas.texto(binding.etLimite);
         if (tipo == TipoTransacao.DESPESA && !textoLimite.isEmpty()) {
-            limite = Formatadores.converterValor(textoLimite);
+            limite = MascaraMoeda.valor(textoLimite);
             if (limite == null || limite.signum() <= 0) {
                 binding.campoLimite.setError(getString(R.string.erro_valor_invalido));
                 return;

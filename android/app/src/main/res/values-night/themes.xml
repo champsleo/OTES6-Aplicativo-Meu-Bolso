@@ -1,6 +1,5 @@
 <resources>
-    <!-- O app usa sempre o tema claro, mesmo com o modo escuro do celular ligado -->
-    <style name="Base.Theme.MeuBolso" parent="Theme.Material3.Light.NoActionBar">
+    <style name="Base.Theme.MeuBolso" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/verde</item>
         <item name="colorOnPrimary">@color/branco</item>
         <item name="colorPrimaryContainer">@color/verde_claro</item>
@@ -9,7 +8,19 @@
         <item name="colorSecondaryContainer">@color/verde_claro</item>
         <item name="colorOnSecondaryContainer">@color/verde_escuro</item>
         <item name="android:colorBackground">@color/fundo</item>
-        <item name="colorSurface">@color/branco</item>
+        <item name="colorSurface">@color/superficie</item>
         <item name="colorOnSurface">@color/texto_principal</item>
+        <item name="colorTertiary">@color/oliva</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="textAppearanceHeadlineMedium">@style/Texto.Titulo.Grande</item>
+        <item name="textAppearanceTitleLarge">@style/Texto.Titulo.Barra</item>
+        <item name="textAppearanceTitleMedium">@style/Texto.Titulo.Medio</item>
+        <item name="textAppearanceBodyLarge">@style/Texto.Corpo.Grande</item>
+        <item name="textAppearanceBodyMedium">@style/Texto.Corpo.Medio</item>
+        <item name="textAppearanceBodySmall">@style/Texto.Corpo.Pequeno</item>
+        <item name="textAppearanceLabelLarge">@style/Texto.Rotulo.Grande</item>
+        <item name="textAppearanceLabelMedium">@style/Texto.Rotulo.Medio</item>
+        <item name="textAppearanceLabelSmall">@style/Texto.Rotulo.Pequeno</item>
     </style>
 </resources>

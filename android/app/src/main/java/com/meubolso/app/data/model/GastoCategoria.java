@@ -2,7 +2,6 @@ package com.meubolso.app.data.model;
 
 import java.math.BigDecimal;
 
-/** Quanto foi gasto em uma categoria no mês (calculado pelo servidor). */
 public class GastoCategoria {
 
     private Long categoriaId;

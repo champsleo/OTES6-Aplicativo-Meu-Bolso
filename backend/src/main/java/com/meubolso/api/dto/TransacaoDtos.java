@@ -16,7 +16,7 @@ public final class TransacaoDtos {
     private TransacaoDtos() {
     }
 
-    /** O tipo não é enviado: ele vem da categoria escolhida. */
+    // Não tem "tipo": ele vem da categoria escolhida.
     public record TransacaoRequest(
             @NotBlank(message = "Informe a descrição")
             @Size(max = 100, message = "A descrição deve ter no máximo 100 caracteres")
@@ -31,7 +31,19 @@ public final class TransacaoDtos {
             LocalDate data,
 
             @NotNull(message = "Informe a categoria")
-            Long categoriaId) {
+            Long categoriaId,
+
+            @NotNull(message = "Informe a conta")
+            Long contaId) {
+    }
+
+    // Enviado quando a despesa leva a categoria a 80% do limite ou mais; o app mostra como notificação.
+    public record AlertaLimite(
+            String categoria,
+            BigDecimal totalGasto,
+            BigDecimal limiteMensal,
+            double percentual,
+            boolean excedido) {
     }
 
     public record TransacaoResponse(
@@ -42,9 +54,17 @@ public final class TransacaoDtos {
             TipoTransacao tipo,
             Long categoriaId,
             String categoriaNome,
-            String categoriaCor) {
+            String categoriaCor,
+            Long contaId,
+            String contaNome,
+            boolean recorrente,
+            AlertaLimite alertaLimite) {
 
         public static TransacaoResponse de(Transacao t) {
+            return de(t, null);
+        }
+
+        public static TransacaoResponse de(Transacao t, AlertaLimite alerta) {
             return new TransacaoResponse(
                     t.getId(),
                     t.getDescricao(),
@@ -53,7 +73,11 @@ public final class TransacaoDtos {
                     t.getTipo(),
                     t.getCategoria().getId(),
                     t.getCategoria().getNome(),
-                    t.getCategoria().getCor());
+                    t.getCategoria().getCor(),
+                    t.getConta().getId(),
+                    t.getConta().getNome(),
+                    t.getRecorrencia() != null,
+                    alerta);
         }
     }
 }

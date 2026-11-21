@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Endpoints públicos (não exigem token): cadastro e login.
- */
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Autenticação", description = "Cadastro e login de usuários")

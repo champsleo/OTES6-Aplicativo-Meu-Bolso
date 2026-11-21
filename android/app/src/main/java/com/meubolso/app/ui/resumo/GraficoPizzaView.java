@@ -2,7 +2,6 @@ package com.meubolso.app.ui.resumo;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
@@ -10,6 +9,9 @@ import android.util.TypedValue;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+
+import com.meubolso.app.R;
 
 import com.meubolso.app.data.model.GastoCategoria;
 import com.meubolso.app.util.Formatadores;
@@ -17,10 +19,7 @@ import com.meubolso.app.util.Formatadores;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Gráfico de rosca (donut) desenhado à mão com Canvas — sem bibliotecas externas.
- * Cada fatia é uma categoria de despesa; o tamanho é proporcional ao valor gasto.
- */
+// Gráfico de rosca desenhado à mão com Canvas, sem bibliotecas.
 public class GraficoPizzaView extends View {
 
     private static final float ESPESSURA_RELATIVA = 0.22f;
@@ -46,25 +45,24 @@ public class GraficoPizzaView extends View {
         pincelFatia.setStyle(Paint.Style.STROKE);
 
         pincelTitulo.setTextAlign(Paint.Align.CENTER);
-        pincelTitulo.setColor(Color.GRAY);
+        pincelTitulo.setColor(ContextCompat.getColor(context, R.color.texto_secundario));
         pincelTitulo.setTextSize(sp(13));
 
         pincelValor.setTextAlign(Paint.Align.CENTER);
-        pincelValor.setColor(Color.DKGRAY);
+        pincelValor.setColor(ContextCompat.getColor(context, R.color.texto_principal));
         pincelValor.setFakeBoldText(true);
         pincelValor.setTextSize(sp(18));
+        android.graphics.Typeface fonte = androidx.core.content.res.ResourcesCompat.getFont(context, R.font.montserrat);
+        if (fonte != null) {
+            pincelTitulo.setTypeface(fonte);
+            pincelValor.setTypeface(fonte);
+        }
     }
 
-    /** Converte "sp" (unidade de texto do Android) em pixels. */
     private float sp(float valor) {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, valor, getResources().getDisplayMetrics());
     }
 
-    /**
-     * @param gastos       despesas por categoria (vindas do resumo da API)
-     * @param titulo       texto pequeno do centro (ex.: "Total gasto")
-     * @param textoCentral texto grande do centro (ex.: "R$ 1.234,00")
-     */
     public void setDados(List<GastoCategoria> gastos, String titulo, String textoCentral) {
         valores.clear();
         cores.clear();
@@ -79,7 +77,7 @@ public class GraficoPizzaView extends View {
         }
         this.titulo = titulo;
         this.textoCentral = textoCentral;
-        invalidate(); // pede para o Android redesenhar a view
+        invalidate();
     }
 
     @Override
@@ -98,11 +96,11 @@ public class GraficoPizzaView extends View {
         pincelFatia.setStrokeWidth(espessura);
 
         if (soma <= 0f) {
-            // Sem despesas: desenha um anel cinza
-            pincelFatia.setColor(Color.LTGRAY);
+            pincelFatia.setColor(ContextCompat.getColor(getContext(), R.color.anel_vazio));
             canvas.drawArc(area, 0, 360, false, pincelFatia);
         } else {
-            float anguloInicial = -90f; // começa no topo
+            // Começa no topo do círculo.
+            float anguloInicial = -90f;
             boolean variasFatias = valores.size() > 1;
             for (int i = 0; i < valores.size(); i++) {
                 float angulo = valores.get(i) / soma * 360f;

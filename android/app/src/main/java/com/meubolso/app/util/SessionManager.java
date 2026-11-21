@@ -5,10 +5,7 @@ import android.content.SharedPreferences;
 
 import com.meubolso.app.data.model.AuthResponse;
 
-/**
- * Guarda o token e os dados do usuário logado no armazenamento local do celular (SharedPreferences),
- * para que a pessoa não precise fazer login toda vez que abrir o app.
- */
+// Guarda o token para a pessoa não precisar logar toda vez que abre o app.
 public class SessionManager {
 
     private static final String ARQUIVO = "meubolso_sessao";

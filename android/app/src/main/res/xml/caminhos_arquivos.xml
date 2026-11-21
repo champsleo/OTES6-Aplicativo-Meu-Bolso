@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Só a pasta de exportações pode ser compartilhada com outros apps. -->
+    <cache-path
+        name="exportacoes"
+        path="exportacoes/" />
+</paths>

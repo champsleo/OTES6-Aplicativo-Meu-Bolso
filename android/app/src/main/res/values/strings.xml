@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Meu Bolso</string>
 
-    <!-- Login e cadastro -->
     <string name="login_subtitulo">Seu dinheiro organizado, mês a mês</string>
     <string name="email">E-mail</string>
     <string name="senha">Senha</string>
@@ -20,7 +19,6 @@
     <string name="erro_senha_curta">A senha deve ter pelo menos 6 caracteres</string>
     <string name="erro_senhas_diferentes">As senhas não conferem</string>
 
-    <!-- Tela principal -->
     <string name="ola_usuario">Olá, %1$s!</string>
     <string name="sair">Sair</string>
     <string name="confirmar_saida">Deseja realmente sair da sua conta?</string>
@@ -32,7 +30,6 @@
     <string name="proximo_mes">Próximo mês</string>
     <string name="tentar_novamente">Tentar de novo</string>
 
-    <!-- Início -->
     <string name="saldo_do_mes">Saldo do mês</string>
     <string name="receitas">Receitas</string>
     <string name="despesas">Despesas</string>
@@ -40,9 +37,8 @@
     <string name="valor_zero">R$ 0,00</string>
     <string name="nenhum_lancamento">Nenhum lançamento neste mês.\nToque no + para adicionar.</string>
     <string name="novo_lancamento">Novo lançamento</string>
-    <string name="detalhes_lancamento">%1$s • %2$s</string>
+    <string name="detalhes_lancamento">%1$s • %2$s • %3$s</string>
 
-    <!-- Resumo -->
     <string name="despesas_por_categoria">Despesas por categoria</string>
     <string name="total_gasto">Total gasto</string>
     <string name="sem_despesas">Nenhuma despesa registrada neste mês.</string>
@@ -53,7 +49,6 @@
     <string name="limite_usado">%1$s de %2$s (%3$s do limite)</string>
     <string name="limite_excedido">Limite excedido! %1$s de %2$s (%3$s)</string>
 
-    <!-- Categorias -->
     <string name="nova_categoria">Nova categoria</string>
     <string name="editar_categoria">Editar categoria</string>
     <string name="excluir_categoria">Excluir categoria</string>
@@ -70,7 +65,6 @@
     <string name="categoria_excluida">Categoria excluída</string>
     <string name="erro_informe_nome_categoria">Informe o nome</string>
 
-    <!-- Formulário de lançamento -->
     <string name="editar_lancamento">Editar lançamento</string>
     <string name="descricao">Descrição</string>
     <string name="valor">Valor</string>
@@ -87,4 +81,107 @@
     <string name="erro_informe_descricao">Informe a descrição</string>
     <string name="erro_valor_invalido">Informe um valor maior que zero</string>
     <string name="erro_selecione_categoria">Selecione uma categoria</string>
+    <string name="aba_contas">Contas</string>
+    <string name="aba_metas">Metas</string>
+
+    <string name="buscar_lancamento">Buscar lançamento</string>
+    <string name="busca_sem_resultado">Nenhum lançamento encontrado para essa busca neste mês.</string>
+    <string name="desfazer">Desfazer</string>
+    <string name="exclusao_desfeita">Exclusão desfeita</string>
+    <string name="lancamento_excluido_nome">\"%1$s\" excluído</string>
+    <string name="categoria_excluida_nome">Categoria \"%1$s\" excluída</string>
+    <string name="lancamento_recorrente">Lançamento recorrente</string>
+
+    <string name="conta">Conta</string>
+    <string name="saldo_total">Saldo total das contas</string>
+    <string name="minhas_contas">Minhas contas</string>
+    <string name="nova_conta">Nova conta</string>
+    <string name="editar_conta">Editar conta</string>
+    <string name="excluir_conta">Excluir conta</string>
+    <string name="confirmar_exclusao_conta">Excluir a conta \"%1$s\"? Só é possível se ela não tiver lançamentos nem transferências.</string>
+    <string name="nome_conta">Nome da conta</string>
+    <string name="tipo_carteira">Carteira</string>
+    <string name="tipo_banco">Banco</string>
+    <string name="tipo_cartao">Cartão</string>
+    <string name="saldo_inicial">Saldo inicial</string>
+    <string name="saldo_inicial_ajuda">Quanto já tinha nesta conta antes de começar a usar o app.</string>
+    <string name="fatura_em_aberto">Fatura em aberto</string>
+    <string name="fatura_ajuda">Valor que já devia no cartão (entra como saldo negativo).</string>
+    <string name="conta_criada">Conta criada</string>
+    <string name="conta_atualizada">Conta atualizada</string>
+    <string name="conta_excluida">Conta excluída</string>
+    <string name="erro_informe_nome_conta">Informe o nome da conta</string>
+    <string name="erro_selecione_conta">Selecione uma conta</string>
+    <string name="erro_contas_iguais">Escolha uma conta diferente da de origem</string>
+    <string name="erro_duas_contas">Cadastre pelo menos duas contas para transferir.</string>
+    <string name="transferir">Transferir</string>
+    <string name="nova_transferencia">Nova transferência</string>
+    <string name="da_conta">Da conta</string>
+    <string name="para_a_conta">Para a conta</string>
+    <string name="descricao_opcional">Descrição (opcional)</string>
+    <string name="transferencias_de">Transferências de %1$s</string>
+    <string name="sem_transferencias">Nenhuma transferência neste mês.</string>
+    <string name="transferencia_de_para">%1$s → %2$s</string>
+    <string name="descricao_e_data">%1$s • %2$s</string>
+    <string name="transferencia_realizada">Transferência realizada</string>
+    <string name="transferencia_excluida">Transferência excluída</string>
+    <string name="excluir_transferencia">Excluir transferência</string>
+
+    <string name="repetir_todo_mes">Repetir todo mês neste mesmo dia</string>
+    <string name="lancamentos_recorrentes">Lançamentos recorrentes</string>
+    <string name="recorrencia_criada">Lançamento recorrente criado. Ele será lançado automaticamente todo mês.</string>
+    <string name="recorrencia_detalhes">Todo dia %1$d • %2$s • %3$s</string>
+    <string name="recorrencia_proxima">Próximo lançamento: %1$s</string>
+    <string name="recorrencia_pausada_rotulo">Pausada</string>
+    <string name="recorrencia_ativa">Recorrência ativa</string>
+    <string name="recorrencia_pausada">Recorrência pausada</string>
+    <string name="recorrencia_retomada">Recorrência retomada</string>
+    <string name="recorrencia_excluida">Recorrência excluída (os lançamentos já criados continuam)</string>
+    <string name="excluir_recorrencia">Excluir recorrência</string>
+    <string name="confirmar_exclusao_recorrencia">Parar de lançar \"%1$s\" todo mês? Os lançamentos já criados continuam no histórico.</string>
+    <string name="sem_recorrencias">Nenhum lançamento recorrente.\nAo criar um lançamento, ative \"Repetir todo mês\".</string>
+
+    <string name="nova_meta">Nova meta</string>
+    <string name="editar_meta">Editar meta</string>
+    <string name="excluir_meta">Excluir meta</string>
+    <string name="confirmar_exclusao_meta">Excluir a meta \"%1$s\"?</string>
+    <string name="nome_meta">Nome da meta (ex.: Viagem)</string>
+    <string name="valor_meta">Quanto quer juntar</string>
+    <string name="prazo_opcional">Prazo (opcional)</string>
+    <string name="prazo_ajuda">Com prazo, o app calcula quanto guardar por mês.</string>
+    <string name="remover_prazo">Remover prazo</string>
+    <string name="sem_metas">Nenhuma meta ainda.\nToque no + para criar sua primeira meta de economia.</string>
+    <string name="meta_progresso">%1$s de %2$s</string>
+    <string name="meta_detalhe_prazo">Faltam %1$s • guarde %2$s por mês até %3$s</string>
+    <string name="meta_detalhe_sem_prazo">Faltam %1$s</string>
+    <string name="meta_concluida">Meta concluída! 🎉</string>
+    <string name="meta_concluida_parabens">Parabéns, você atingiu a meta! 🎉</string>
+    <string name="guardar_ou_retirar">Guardar / retirar</string>
+    <string name="guardar">Guardar</string>
+    <string name="retirar">Retirar</string>
+    <string name="meta_criada">Meta criada</string>
+    <string name="meta_atualizada">Meta atualizada</string>
+    <string name="meta_excluida">Meta excluída</string>
+    <string name="valor_guardado">Valor guardado na meta</string>
+    <string name="valor_retirado">Valor retirado da meta</string>
+    <string name="erro_informe_nome_meta">Informe o nome da meta</string>
+
+    <string name="evolucao_6_meses">Evolução dos últimos 6 meses</string>
+
+    <string name="canal_limites">Limites de gastos</string>
+    <string name="canal_limites_descricao">Avisos quando uma categoria chega perto ou passa do limite mensal</string>
+    <string name="notificacao_limite_excedido">Limite de %1$s excedido!</string>
+    <string name="notificacao_limite_proximo">%1$s já usou %2$s do limite</string>
+    <string name="notificacao_limite_texto">%1$s gastos de %2$s neste mês</string>
+
+    <string name="exportar_mes">Exportar mês</string>
+    <string name="exportar_titulo">Exportar %1$s</string>
+    <string name="exportar_csv">Planilha (CSV) — abre no Excel</string>
+    <string name="exportar_pdf">Relatório (PDF)</string>
+    <string name="compartilhar_relatorio">Compartilhar relatório</string>
+    <string name="erro_exportar">Não foi possível gerar o arquivo</string>
+
+    <string name="tipo_desta_conta">Tipo desta conta</string>
+    <string name="saldo_atual_conta">Saldo atual: %1$s (inclui lançamentos e transferências)</string>
+    <string name="saldo_inicial_ajuda_edicao">Valor que a conta tinha antes de começar a usar o app. Não é o saldo atual.</string>
 </resources>

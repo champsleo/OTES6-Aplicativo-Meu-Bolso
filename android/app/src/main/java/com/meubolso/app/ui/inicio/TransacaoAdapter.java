@@ -3,6 +3,7 @@ package com.meubolso.app.ui.inicio;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -19,9 +20,6 @@ import com.meubolso.app.util.Formatadores;
 
 import java.util.Objects;
 
-/**
- * Adapter da lista de lançamentos. ListAdapter + DiffUtil atualizam só os itens que mudaram.
- */
 public class TransacaoAdapter extends ListAdapter<Transacao, TransacaoAdapter.ViewHolder> {
 
     public interface AoClicar {
@@ -75,7 +73,8 @@ public class TransacaoAdapter extends ListAdapter<Transacao, TransacaoAdapter.Vi
 
             binding.tvDescricao.setText(transacao.getDescricao());
             binding.tvDetalhes.setText(context.getString(R.string.detalhes_lancamento,
-                    transacao.getCategoriaNome(), Formatadores.data(transacao.getData())));
+                    transacao.getCategoriaNome(), transacao.getContaNome(), Formatadores.data(transacao.getData())));
+            binding.ivRecorrente.setVisibility(transacao.isRecorrente() ? View.VISIBLE : View.GONE);
 
             String sinal = receita ? "+ " : "− ";
             binding.tvValor.setText(sinal + Formatadores.moeda(transacao.getValor()));

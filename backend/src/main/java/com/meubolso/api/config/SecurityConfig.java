@@ -19,9 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.util.List;
 
-/**
- * Define quais endereços são públicos e quais exigem login.
- */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -39,13 +36,13 @@ public class SecurityConfig {
                                                    JwtService jwtService,
                                                    ObjectMapper objectMapper) throws Exception {
         http
-                // API REST sem sessão: cada requisição se identifica pelo token, então CSRF não se aplica
+                // Sem sessão nem cookies (cada requisição traz o token), então a proteção CSRF não se aplica.
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessao -> sessao.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(regras -> regras
                         .requestMatchers(ROTAS_PUBLICAS).permitAll()
                         .anyRequest().authenticated())
-                // Resposta 401 em JSON quando o token está ausente, inválido ou expirado
+                // Responde 401 em JSON, no mesmo formato dos outros erros, para o app saber que precisa logar de novo.
                 .exceptionHandling(erros -> erros.authenticationEntryPoint((request, response, ex) -> {
                     response.setStatus(HttpStatus.UNAUTHORIZED.value());
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);

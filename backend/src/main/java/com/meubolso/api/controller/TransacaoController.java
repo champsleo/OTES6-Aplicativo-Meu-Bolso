@@ -39,14 +39,18 @@ public class TransacaoController {
     }
 
     @GetMapping
-    @Operation(summary = "Lista os lançamentos de um mês (ex.: ?mes=2026-11&tipo=DESPESA)")
+    @Operation(summary = "Lista os lançamentos de um mês (ex.: ?mes=2026-11&tipo=DESPESA&busca=mercado&contaId=2)")
     public ResponseEntity<List<TransacaoResponse>> listar(
             @Parameter(description = "Mês no formato AAAA-MM. Se não informado, usa o mês atual.")
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth mes,
             @RequestParam(required = false) TipoTransacao tipo,
+            @Parameter(description = "Filtra pela conta")
+            @RequestParam(required = false) Long contaId,
+            @Parameter(description = "Texto procurado na descrição (ignora maiúsculas e acentos)")
+            @RequestParam(required = false) String busca,
             @Parameter(hidden = true) @AuthenticationPrincipal UsuarioAutenticado usuario) {
         YearMonth mesConsultado = (mes != null) ? mes : YearMonth.now();
-        return ResponseEntity.ok(transacaoService.listar(usuario.id(), mesConsultado, tipo));
+        return ResponseEntity.ok(transacaoService.listar(usuario.id(), mesConsultado, tipo, contaId, busca));
     }
 
     @GetMapping("/{id}")
@@ -58,7 +62,7 @@ public class TransacaoController {
     }
 
     @PostMapping
-    @Operation(summary = "Cria um lançamento")
+    @Operation(summary = "Cria um lançamento (a resposta traz alertaLimite se a categoria passou de 80% do limite)")
     public ResponseEntity<TransacaoResponse> criar(
             @Valid @RequestBody TransacaoRequest request,
             @Parameter(hidden = true) @AuthenticationPrincipal UsuarioAutenticado usuario) {

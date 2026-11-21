@@ -2,6 +2,8 @@ package com.meubolso.api;
 
 import com.meubolso.api.dto.ResumoDtos.ResumoMensalResponse;
 import com.meubolso.api.model.Categoria;
+import com.meubolso.api.model.Conta;
+import com.meubolso.api.model.TipoConta;
 import com.meubolso.api.model.TipoTransacao;
 import com.meubolso.api.model.Transacao;
 import com.meubolso.api.model.Usuario;
@@ -21,9 +23,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Teste unitário: testa só a lógica de cálculo, sem banco de dados (o repositório é simulado com Mockito).
- */
+// Teste unitário: o repositório é simulado com Mockito, sem banco de dados.
 class ResumoServiceTest {
 
     private final TransacaoRepository repository = mock(TransacaoRepository.class);
@@ -35,14 +35,15 @@ class ResumoServiceTest {
         Categoria salario = categoria(1L, "Salário", TipoTransacao.RECEITA, null, usuario);
         Categoria mercado = categoria(2L, "Mercado", TipoTransacao.DESPESA, new BigDecimal("200.00"), usuario);
         Categoria lazer = categoria(3L, "Lazer", TipoTransacao.DESPESA, null, usuario);
+        Conta conta = new Conta("Banco", TipoConta.BANCO, BigDecimal.ZERO, usuario);
         LocalDate dia = LocalDate.of(2026, 11, 5);
 
         when(repository.findByUsuarioIdAndDataBetweenOrderByDataDescIdDesc(anyLong(), any(), any()))
                 .thenReturn(List.of(
-                        new Transacao("Salário", new BigDecimal("1000.00"), dia, salario, usuario),
-                        new Transacao("Feira", new BigDecimal("150.00"), dia, mercado, usuario),
-                        new Transacao("Mercado", new BigDecimal("150.00"), dia, mercado, usuario),
-                        new Transacao("Cinema", new BigDecimal("100.00"), dia, lazer, usuario)));
+                        new Transacao("Salário", new BigDecimal("1000.00"), dia, salario, conta, usuario),
+                        new Transacao("Feira", new BigDecimal("150.00"), dia, mercado, conta, usuario),
+                        new Transacao("Mercado", new BigDecimal("150.00"), dia, mercado, conta, usuario),
+                        new Transacao("Cinema", new BigDecimal("100.00"), dia, lazer, conta, usuario)));
 
         ResumoMensalResponse resumo = service.gerar(1L, YearMonth.of(2026, 11));
 
@@ -51,7 +52,6 @@ class ResumoServiceTest {
         assertThat(resumo.saldo()).isEqualByComparingTo("600.00");
         assertThat(resumo.quantidadeLancamentos()).isEqualTo(4);
 
-        // Ordenado do maior gasto para o menor
         assertThat(resumo.despesasPorCategoria()).hasSize(2);
         var primeiro = resumo.despesasPorCategoria().get(0);
         assertThat(primeiro.nome()).isEqualTo("Mercado");

@@ -11,9 +11,13 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.meubolso.app.R;
 import com.meubolso.app.data.model.Categoria;
+import com.meubolso.app.data.model.Conta;
+import com.meubolso.app.data.model.RecorrenciaRequest;
 import com.meubolso.app.data.model.Transacao;
 import com.meubolso.app.data.model.TransacaoRequest;
 import com.meubolso.app.data.repository.CategoriaRepository;
+import com.meubolso.app.data.repository.ContaRepository;
+import com.meubolso.app.data.repository.RecorrenciaRepository;
 import com.meubolso.app.data.repository.Resultado;
 import com.meubolso.app.data.repository.ResultadoCallback;
 import com.meubolso.app.data.repository.TransacaoRepository;
@@ -22,45 +26,61 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * ViewModel do formulário de lançamento (criar, editar e excluir).
- * Guarda a data e a categoria escolhidas, para não perdê-las ao girar a tela.
- */
+// Guarda as escolhas do formulário para não perdê-las quando a tela gira.
 public class TransacaoFormViewModel extends AndroidViewModel {
 
+    public enum Acao { SALVO, RECORRENCIA_CRIADA, EXCLUIDO }
+
+    public static class Concluido {
+        public final Acao acao;
+        public final Transacao transacao;
+
+        Concluido(Acao acao, Transacao transacao) {
+            this.acao = acao;
+            this.transacao = transacao;
+        }
+    }
+
     private final CategoriaRepository categoriaRepository;
+    private final ContaRepository contaRepository;
     private final TransacaoRepository transacaoRepository;
+    private final RecorrenciaRepository recorrenciaRepository;
 
     private final MutableLiveData<Resultado<List<Categoria>>> categorias = new MutableLiveData<>();
+    private final MutableLiveData<Resultado<List<Conta>>> contas = new MutableLiveData<>();
     private final MutableLiveData<Resultado<Transacao>> transacao = new MutableLiveData<>();
-    private final MutableLiveData<Resultado<Boolean>> operacao = new MutableLiveData<>();
+    private final MutableLiveData<Resultado<Concluido>> operacao = new MutableLiveData<>();
 
     private LocalDate dataSelecionada = LocalDate.now();
     private Categoria categoriaSelecionada;
+    private Conta contaSelecionada;
     private boolean iniciado = false;
     private boolean formularioPreenchido = false;
 
     public TransacaoFormViewModel(@NonNull Application application) {
         super(application);
         categoriaRepository = new CategoriaRepository(application);
+        contaRepository = new ContaRepository(application);
         transacaoRepository = new TransacaoRepository(application);
+        recorrenciaRepository = new RecorrenciaRepository(application);
     }
 
     public LiveData<Resultado<List<Categoria>>> getCategorias() {
         return categorias;
     }
 
-    /** Lançamento carregado da API (somente no modo edição). */
+    public LiveData<Resultado<List<Conta>>> getContas() {
+        return contas;
+    }
+
     public LiveData<Resultado<Transacao>> getTransacao() {
         return transacao;
     }
 
-    /** Resultado de salvar ou excluir. */
-    public LiveData<Resultado<Boolean>> getOperacao() {
+    public LiveData<Resultado<Concluido>> getOperacao() {
         return operacao;
     }
 
-    /** Carrega os dados uma única vez (mesmo que a tela seja recriada). */
     public void iniciar(@Nullable Long transacaoId) {
         if (iniciado) {
             return;
@@ -68,6 +88,7 @@ public class TransacaoFormViewModel extends AndroidViewModel {
         iniciado = true;
         categorias.setValue(Resultado.carregando());
         categoriaRepository.listar(null, categorias::setValue);
+        contaRepository.listar(contas::setValue);
 
         if (transacaoId != null) {
             transacao.setValue(Resultado.carregando());
@@ -91,6 +112,14 @@ public class TransacaoFormViewModel extends AndroidViewModel {
         this.categoriaSelecionada = categoria;
     }
 
+    public Conta getContaSelecionada() {
+        return contaSelecionada;
+    }
+
+    public void setContaSelecionada(@Nullable Conta conta) {
+        this.contaSelecionada = conta;
+    }
+
     public boolean isFormularioPreenchido() {
         return formularioPreenchido;
     }
@@ -99,7 +128,7 @@ public class TransacaoFormViewModel extends AndroidViewModel {
         this.formularioPreenchido = true;
     }
 
-    public void salvar(@Nullable Long transacaoId, String descricao, BigDecimal valor) {
+    public void salvar(@Nullable Long transacaoId, String descricao, BigDecimal valor, boolean repetirTodoMes) {
         if (descricao.isEmpty()) {
             erro(R.string.erro_informe_descricao);
             return;
@@ -112,13 +141,27 @@ public class TransacaoFormViewModel extends AndroidViewModel {
             erro(R.string.erro_selecione_categoria);
             return;
         }
-
-        TransacaoRequest request = new TransacaoRequest(
-                descricao, valor, dataSelecionada.toString(), categoriaSelecionada.getId());
+        if (contaSelecionada == null) {
+            erro(R.string.erro_selecione_conta);
+            return;
+        }
 
         operacao.setValue(Resultado.carregando());
+
+        if (repetirTodoMes && transacaoId == null) {
+            RecorrenciaRequest request = new RecorrenciaRequest(descricao, valor, dataSelecionada.toString(),
+                    categoriaSelecionada.getId(), contaSelecionada.getId());
+            recorrenciaRepository.criar(request, resultado -> operacao.setValue(resultado.isSucesso()
+                    ? Resultado.sucesso(new Concluido(Acao.RECORRENCIA_CRIADA, null))
+                    : Resultado.erro(resultado.getMensagem())));
+            return;
+        }
+
+        TransacaoRequest request = new TransacaoRequest(descricao, valor, dataSelecionada.toString(),
+                categoriaSelecionada.getId(), contaSelecionada.getId());
         ResultadoCallback<Transacao> aoSalvar = resultado -> operacao.setValue(resultado.isSucesso()
-                ? Resultado.sucesso(true) : Resultado.erro(resultado.getMensagem()));
+                ? Resultado.sucesso(new Concluido(Acao.SALVO, resultado.getDados()))
+                : Resultado.erro(resultado.getMensagem()));
 
         if (transacaoId == null) {
             transacaoRepository.criar(request, aoSalvar);
@@ -127,10 +170,14 @@ public class TransacaoFormViewModel extends AndroidViewModel {
         }
     }
 
+    // Sem confirmação: a tela anterior oferece "Desfazer".
     public void excluir(long transacaoId) {
+        Resultado<Transacao> carregada = transacao.getValue();
+        Transacao original = (carregada != null) ? carregada.getDados() : null;
         operacao.setValue(Resultado.carregando());
         transacaoRepository.excluir(transacaoId, resultado -> operacao.setValue(resultado.isSucesso()
-                ? Resultado.sucesso(false) : Resultado.erro(resultado.getMensagem())));
+                ? Resultado.sucesso(new Concluido(Acao.EXCLUIDO, original))
+                : Resultado.erro(resultado.getMensagem())));
     }
 
     private void erro(@StringRes int mensagem) {
