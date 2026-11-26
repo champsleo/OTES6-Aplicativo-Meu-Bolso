@@ -9,8 +9,9 @@ O projeto é dividido em duas partes que se comunicam por **API REST**:
 | Front-end (app) | Android nativo em Java, Views XML, arquitetura MVVM | `android/` |
 | Back-end (API) | Java 21 + Spring Boot 3, banco H2, autenticação JWT | `backend/` |
 
-> **Equipe:** _(preencha com os nomes e matrículas)_
-> **Vídeo de demonstração:** _(cole aqui o link)_
+> **Equipe:** Enzo Holtz, João Vytor Dutra, Leonardo Deschamps e Nivea Maria
+
+> **Vídeo de demonstração:** https://drive.google.com/drive/folders/1FLQwgmBIr6xSQUKd4fXt29XHF7zy_g7D?usp=sharing
 
 ---
 
